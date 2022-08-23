@@ -11,10 +11,12 @@ namespace kommunerochskolverksamhet
         public static void Main()
         {
             //Paths to all the input files and output file.
-            string KommunerPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "kommuner.csv");
-            string SkolverksamhetPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "skolverksamhet.csv");
-            string KommunOchSkolverksamhetPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "KommunOchSkolverksamhet.csv");
-
+            string MainDirectory = Environment.CurrentDirectory;
+            string ProjectDirectory = Directory.GetParent(MainDirectory).Parent.Parent.FullName;
+            string KommunerPath = Path.Combine(ProjectDirectory, "kommuner.csv");
+            string SkolverksamhetPath = Path.Combine(ProjectDirectory, "skolverksamhet.csv");
+            string KommunOchSkolverksamhetPath = Path.Combine(ProjectDirectory, "KommunOchSkolverksamhet.csv");
+            
             //Configure Csv Separation
             CsvConfiguration config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
