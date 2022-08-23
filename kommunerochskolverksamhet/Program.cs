@@ -10,7 +10,7 @@ namespace kommunerochskolverksamhet
     {
         public static void Main()
         {
-            //Paths to all the input files and out file.
+            //Paths to all the input files and output file.
             string KommunerPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "kommuner.csv");
             string SkolverksamhetPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "skolverksamhet.csv");
             string KommunOchSkolverksamhetPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "KommunOchSkolverksamhet.csv");
@@ -25,6 +25,7 @@ namespace kommunerochskolverksamhet
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             Encoding srcEncoding = CodePagesEncodingProvider.Instance.GetEncoding(1252);
 
+            //Reading Kommuner.csv
             using (StreamReader reader = new StreamReader(KommunerPath, srcEncoding))
             using (CsvReader KommunCsv = new CsvReader(reader, config))
             {
@@ -33,13 +34,16 @@ namespace kommunerochskolverksamhet
 
                 List<Kommuner> KommunerList = KommunCsv.GetRecords<Kommuner>().ToList();
 
+                //Reading Skolverksamhet.csv
                 using (StreamReader readSkolverksamhet = new StreamReader(SkolverksamhetPath, srcEncoding))
                 using (CsvReader SkolverksamhetCsv = new CsvReader(readSkolverksamhet, config))
                 {
                     SkolverksamhetCsv.Read();
                     SkolverksamhetCsv.ReadHeader();
+
                     List<Skolverksamhet> SkolverksamhetList = SkolverksamhetCsv.GetRecords<Skolverksamhet>().ToList();
 
+                    //Merge Kommuner.csv and Skolversakmhet.csv
                     var result = from S in SkolverksamhetList
                                  join K in KommunerList on S.Kod equals K.Kod into X
                                  select new
@@ -51,14 +55,14 @@ namespace kommunerochskolverksamhet
                                      S.FörskoleKlass,
                                      S.FritidsHem
                                  };
-
+                    //Writing into a new .csv file with the name of KommunOchSkolverksamhet.csv
                     using (StreamWriter writer = new StreamWriter(KommunOchSkolverksamhetPath, false, srcEncoding))
                     using (CsvWriter WriteCSV = new CsvWriter(writer, config))
                     {
                         WriteCSV.WriteRecords(result);
                     }
 
-
+                    //Confirmation on the console
                     WriteLine(">> Combination complete <<");
                     WriteLine("[File name]: KommunOchSkolverksamhet.csv");
                     WriteLine($"[Path]: {KommunOchSkolverksamhetPath}");
